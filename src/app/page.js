@@ -46,6 +46,13 @@ export default function Home() {
                     >
                         {t("ssr_demo")}
                     </button>
+                    {/* Add a link to the financial news page */}
+                    <button
+                        onClick={() => (window.location.href = "/news")}
+                        className="w-full text-left p-2 rounded text-gray-600"
+                    >
+                        {t("financial_news")}
+                    </button>
                 </nav>
             </aside>
 
