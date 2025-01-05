@@ -1,0 +1,11 @@
+{
+    "title": "Dashboard",
+    "collected": "Collected",
+    "total_expenses": "Total Expenses",
+    "savings": "Savings",
+    "expenses_breakdown": "Expenses Breakdown",
+    "add_expense": "Add Expense",
+    "expense_name": "Expense Name",
+    "expense_amount": "Expense Amount",
+    "add_button": "Add"
+}

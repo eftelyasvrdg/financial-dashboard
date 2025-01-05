@@ -1,0 +1,11 @@
+{
+    "title": "Gösterge Paneli",
+    "collected": "Toplanan",
+    "total_expenses": "Toplam Harcamalar",
+    "savings": "Tasarruflar",
+    "expenses_breakdown": "Harcamaların Dağılımı",
+    "add_expense": "Harcama Ekle",
+    "expense_name": "Harcama Adı",
+    "expense_amount": "Harcama Tutarı",
+    "add_button": "Ekle"
+}

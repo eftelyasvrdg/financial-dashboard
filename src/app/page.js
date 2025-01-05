@@ -1,101 +1,209 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { Bar } from "react-chartjs-2";
+import Image from "next/image"; // Import the Image component
+import dynamic from "next/dynamic";
+import useTranslation from "next-translate/useTranslation";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from "chart.js";
+
+// Dynamically import SSRPage with SSR enabled
+const SSRPage = dynamic(() => import("./ssr"), { ssr: true });
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    const { t } = useTranslation("common");
+    const [view, setView] = useState("home");
+    const [financialData, setFinancialData] = useState({
+        income: 5000,
+        expenses: 2500,
+        savings: 2500,
+        expenseHistory: [
+            { name: "Rent", amount: 500 },
+            { name: "Groceries", amount: 200 },
+            { name: "Utilities", amount: 100 },
+        ],
+    });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    const [newExpenseName, setNewExpenseName] = useState("");
+    const [newExpenseAmount, setNewExpenseAmount] = useState("");
+
+    const handleAddExpense = () => {
+        const expenseAmount = parseFloat(newExpenseAmount);
+        const expenseName = newExpenseName.trim() || t("expense_name");
+        if (isNaN(expenseAmount)) return;
+
+        setFinancialData((prev) => ({
+            ...prev,
+            expenses: prev.expenses + expenseAmount,
+            savings: prev.income - (prev.expenses + expenseAmount),
+            expenseHistory: [
+                ...prev.expenseHistory,
+                { name: expenseName, amount: expenseAmount },
+            ],
+        }));
+        setNewExpenseName("");
+        setNewExpenseAmount("");
+    };
+
+    const revenueData = {
+        labels: financialData.expenseHistory.map((expense) => expense.name),
+        datasets: [
+            {
+                label: t("expenses_breakdown"),
+                data: financialData.expenseHistory.map((expense) => expense.amount),
+                backgroundColor: "rgba(255, 99, 132, 0.7)",
+            },
+        ],
+    };
+
+    const revenueOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: "top",
+            },
+            title: {
+                display: true,
+                text: t("expenses_breakdown"),
+            },
+        },
+    };
+
+    return (
+        <div className="flex bg-gray-100 min-h-screen">
+            {/* Sidebar */}
+            <aside className="w-1/4 bg-white p-4 shadow-md">
+                <div className="mb-8 flex items-center">
+                    {/* Add the optimized image */}
+                    <Image
+                        src="/dashboard-icon.png"
+                        alt="Dashboard Icon"
+                        width={50}
+                        height={50}
+                    />
+                    <h2 className="text-2xl font-bold text-blue-600">{t("title")}</h2>
+                </div>
+                <nav className="space-y-4">
+                    <button
+                        onClick={() => setView("home")}
+                        className={`w-full text-left p-2 rounded ${
+                            view === "home" ? "bg-blue-100 text-blue-600" : "text-gray-600"
+                        }`}
+                    >
+                        Home
+                    </button>
+                    <button
+                        onClick={() => setView("expenses")}
+                        className={`w-full text-left p-2 rounded ${
+                            view === "expenses" ? "bg-blue-100 text-blue-600" : "text-gray-600"
+                        }`}
+                    >
+                        Expenses
+                    </button>
+                    <button
+                        onClick={() => setView("ssr")}
+                        className={`w-full text-left p-2 rounded ${
+                            view === "ssr" ? "bg-blue-100 text-blue-600" : "text-gray-600"
+                        }`}
+                    >
+                        SSR Demo
+                    </button>
+                </nav>
+            </aside>
+
+            {/* Main Content */}
+            <main className="flex-1 p-6">
+                {view === "home" && (
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-700 mb-6">{t("title")}</h1>
+
+                        {/* Top Row: Collected, Total Expenses, Savings */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="bg-white p-6 rounded-lg shadow-md">
+                                <h2 className="text-lg font-semibold text-gray-600">{t("collected")}</h2>
+                                <p className="text-3xl font-bold text-green-600 mt-2">
+                                    ${financialData.income}
+                                </p>
+                            </div>
+                            <div className="bg-white p-6 rounded-lg shadow-md">
+                                <h2 className="text-lg font-semibold text-gray-600">{t("total_expenses")}</h2>
+                                <p className="text-3xl font-bold text-red-600 mt-2">
+                                    ${financialData.expenses}
+                                </p>
+                            </div>
+                            <div className="bg-white p-6 rounded-lg shadow-md">
+                                <h2 className="text-lg font-semibold text-gray-600">{t("savings")}</h2>
+                                <p className="text-3xl font-bold text-blue-600 mt-2">
+                                    ${financialData.savings}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-lg shadow-md mt-8">
+                            <h2 className="text-lg font-semibold text-gray-600 mb-4">{t("expenses_breakdown")}</h2>
+                            <Bar
+                                data={revenueData}
+                                options={revenueOptions}
+                                className="w-full h-72"
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {view === "expenses" && (
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-700 mb-6">{t("add_expense")}</h1>
+                        <div className="bg-white p-6 rounded-lg shadow-md">
+                            <h2 className="text-lg font-semibold text-gray-600">{t("add_expense")}</h2>
+                            <div className="flex mt-4 space-x-4">
+                                <input
+                                    type="text"
+                                    placeholder={t("expense_name")}
+                                    className="border p-2 rounded w-full"
+                                    value={newExpenseName}
+                                    onChange={(e) => setNewExpenseName(e.target.value)}
+                                />
+                                <input
+                                    type="number"
+                                    placeholder={t("expense_amount")}
+                                    className="border p-2 rounded w-full"
+                                    value={newExpenseAmount}
+                                    onChange={(e) => setNewExpenseAmount(e.target.value)}
+                                />
+                                <button
+                                    onClick={handleAddExpense}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
+                                >
+                                    {t("add_button")}
+                                </button>
+                            </div>
+                        </div>
+                        <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
+                            <h2 className="text-lg font-semibold text-gray-600">{t("expenses_breakdown")}</h2>
+                            <ul className="mt-4 space-y-2">
+                                {financialData.expenseHistory.map((expense, index) => (
+                                    <li key={index} className="flex justify-between border-b pb-2">
+                                        <span className="text-gray-700">{expense.name}</span>
+                                        <span className="text-gray-900 font-semibold">${expense.amount}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+
+                {view === "ssr" && <SSRPage />}
+            </main>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    );
 }
