@@ -7,7 +7,6 @@ export default function Feedback() {
     const [feedback, setFeedback] = useState("");  
     const [response, setResponse] = useState("");   
 
-    // Ensure consistent hydration
     const [hydrated, setHydrated] = useState(false);
     useEffect(() => setHydrated(true), []);
 
