@@ -62,7 +62,6 @@ export default async function SSRPage() {
         );
     }
 
-    // SSR Content Rendering (Exchange Rates)
     return (
         <div className="flex bg-gray-100 min-h-screen">
             {/* Sidebar */}
