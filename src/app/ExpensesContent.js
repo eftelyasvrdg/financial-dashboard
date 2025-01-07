@@ -16,11 +16,9 @@ export default function ExpensesContent({ financialData, addExpense }) {
             alert(t("invalid_expense_message"));
             return;
         }
-    
-        // Add the expense
+
         addExpense(expenseName, expenseAmount);
-    
-        // Clear input fields
+   
         setNewExpenseName("");
         setNewExpenseAmount("");
     };
