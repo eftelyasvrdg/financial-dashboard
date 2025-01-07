@@ -44,7 +44,7 @@ export default function News() {
             <aside className="w-1/4 bg-white p-4 shadow-md">
                 <div className="mb-8 flex items-center">
                     <Image
-                        src="/dashboard-icon.png" // Correct path from public folder
+                        src="/dashboard-icon.png" 
                         alt="Dashboard Icon"
                         width={50}
                         height={50}
