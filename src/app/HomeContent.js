@@ -15,18 +15,8 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-export default function HomeContent() {
+export default function HomeContent({ financialData }) {
     const { t } = useTranslation("common");
-    const [financialData] = useState({
-        income: 5000,
-        expenses: 2500,
-        savings: 2500,
-        expenseHistory: [
-            { name: "Rent", amount: 500 },
-            { name: "Groceries", amount: 200 },
-            { name: "Utilities", amount: 100 },
-        ],
-    });
 
     const revenueData = {
         labels: financialData.expenseHistory.map((expense) => expense.name),
@@ -42,13 +32,8 @@ export default function HomeContent() {
     const revenueOptions = {
         responsive: true,
         plugins: {
-            legend: {
-                position: "top",
-            },
-            title: {
-                display: true,
-                text: t("expenses_breakdown"),
-            },
+            legend: { position: "top" },
+            title: { display: true, text: t("expenses_breakdown") },
         },
     };
 

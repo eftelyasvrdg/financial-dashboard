@@ -3,27 +3,28 @@
 import { useState } from "react";
 import useTranslation from "next-translate/useTranslation";
 
-export default function ExpensesContent() {
+export default function ExpensesContent({ financialData, addExpense }) {
     const { t } = useTranslation("common");
-
-    // Include pre-existing expenses
-    const [expenses, setExpenses] = useState([
-        { name: "Rent", amount: 500 },
-        { name: "Groceries", amount: 200 },
-        { name: "Utilities", amount: 100 },
-    ]);
     const [newExpenseName, setNewExpenseName] = useState("");
     const [newExpenseAmount, setNewExpenseAmount] = useState("");
 
     const handleAddExpense = () => {
         const expenseAmount = parseFloat(newExpenseAmount);
-        const expenseName = newExpenseName.trim() || t("expense_name");
-        if (isNaN(expenseAmount)) return;
-
-        setExpenses([...expenses, { name: expenseName, amount: expenseAmount }]);
+        const expenseName = newExpenseName.trim() || t("default_expense_name");
+    
+        if (!expenseName || isNaN(expenseAmount) || expenseAmount <= 0) {
+            alert(t("invalid_expense_message"));
+            return;
+        }
+    
+        // Add the expense
+        addExpense(expenseName, expenseAmount);
+    
+        // Clear input fields
         setNewExpenseName("");
         setNewExpenseAmount("");
     };
+    
 
     return (
         <div>
@@ -56,7 +57,7 @@ export default function ExpensesContent() {
             <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-lg font-semibold text-gray-600">{t("expenses_breakdown")}</h2>
                 <ul className="mt-4 space-y-2">
-                    {expenses.map((expense, index) => (
+                    {financialData.expenseHistory.map((expense, index) => (
                         <li key={index} className="flex justify-between border-b pb-2">
                             <span className="text-gray-700">{expense.name}</span>
                             <span className="text-gray-900 font-semibold">${expense.amount.toFixed(2)}</span>
@@ -67,3 +68,4 @@ export default function ExpensesContent() {
         </div>
     );
 }
+

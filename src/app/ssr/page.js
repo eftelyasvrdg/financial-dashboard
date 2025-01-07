@@ -20,7 +20,6 @@ export default async function SSRPage() {
         console.error("Error fetching exchange rate data:", error.message);
     }
 
-    // If no rates data is available, display a fallback message
     if (!rates || Object.keys(rates).length === 0) {
         return (
             <div className="flex bg-gray-100 min-h-screen">
@@ -28,7 +27,7 @@ export default async function SSRPage() {
                 <aside className="w-1/4 bg-white p-4 shadow-md">
                     <div className="mb-8 flex items-center">
                         <Image
-                            src="/dashboard-icon.png" // Correct path from public folder
+                            src="/dashboard-icon.png" 
                             alt="Dashboard Icon"
                             width={50}
                             height={50}

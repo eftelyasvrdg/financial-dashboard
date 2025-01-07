@@ -1,4 +1,4 @@
-"use client"; // Mark this file as a client component
+"use client"; 
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -8,7 +8,6 @@ export default function News() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch data from your financial news API
     useEffect(() => {
         const fetchNews = async () => {
             try {

@@ -1,4 +1,4 @@
-"use client"; // Mark this file as a client component
+"use client";
 
 import { useState } from "react";
 import Image from "next/image";
@@ -8,11 +8,48 @@ import ExpensesContent from "./ExpensesContent";
 
 export default function Home() {
     const { t } = useTranslation("common");
+
+    // Shared state
+    const [financialData, setFinancialData] = useState({
+        income: 5000,
+        expenses: 2500,
+        savings: 2500,
+        expenseHistory: [
+            { name: "Rent", amount: 500 },
+            { name: "Groceries", amount: 200 },
+            { name: "Utilities", amount: 100 },
+        ],
+    });
+
     const [view, setView] = useState("home");
 
+    const addExpense = (name, amount) => {
+        if (!name || amount <= 0 || isNaN(amount)) {
+            console.error("Invalid expense:", { name, amount });
+            return;
+        }
+
+        const updatedExpenseHistory = [...financialData.expenseHistory, { name, amount }];
+
+        const updatedTotalExpenses = financialData.expenses + amount;
+
+        const updatedSavings = financialData.income - updatedTotalExpenses;
+    
+        // Update state
+        setFinancialData((prevState) => ({
+            ...prevState,
+            expenseHistory: updatedExpenseHistory,
+            expenses: updatedTotalExpenses,
+            savings: updatedSavings >= 0 ? updatedSavings : 0,
+        }));
+    
+        console.log("Updated Expense History:", updatedExpenseHistory);
+        console.log("Updated Total Expenses:", updatedTotalExpenses);
+        console.log("Updated Savings:", updatedSavings);
+    };
+    
     return (
         <div className="flex bg-gray-100 min-h-screen">
-            {/* Sidebar */}
             <aside className="w-1/4 bg-white p-4 shadow-md">
                 <div className="mb-8 flex items-center">
                     <Image
@@ -46,20 +83,26 @@ export default function Home() {
                     >
                         {t("ssr_demo")}
                     </button>
-                    {/* Add a link to the financial news page */}
                     <button
                         onClick={() => (window.location.href = "/news")}
                         className="w-full text-left p-2 rounded text-gray-600"
                     >
                         {t("financial_news")}
                     </button>
+                    <button
+                        onClick={() => (window.location.href = "/feedback")}
+                        className="w-full text-left p-2 rounded text-gray-600"
+                    >
+                        {t("send_feedback")}
+                    </button>
                 </nav>
             </aside>
 
-            {/* Main Content */}
             <main className="flex-1 p-6">
-                {view === "home" && <HomeContent />}
-                {view === "expenses" && <ExpensesContent />}
+                {view === "home" && <HomeContent financialData={financialData} />}
+                {view === "expenses" && (
+                    <ExpensesContent financialData={financialData} addExpense={addExpense} />
+                )}
             </main>
         </div>
     );
