@@ -9,7 +9,6 @@ import ExpensesContent from "./ExpensesContent";
 export default function Home() {
     const { t } = useTranslation("common");
 
-    // Shared state
     const [financialData, setFinancialData] = useState({
         income: 5000,
         expenses: 2500,
@@ -34,8 +33,7 @@ export default function Home() {
         const updatedTotalExpenses = financialData.expenses + amount;
 
         const updatedSavings = financialData.income - updatedTotalExpenses;
-    
-        // Update state
+
         setFinancialData((prevState) => ({
             ...prevState,
             expenseHistory: updatedExpenseHistory,
